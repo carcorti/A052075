@@ -1,0 +1,695 @@
+\documentclass[12pt,reqno]{article}
+\usepackage{amsmath,amssymb,amsfonts,amsthm}
+\usepackage{booktabs}
+\usepackage[hidelinks]{hyperref}
+
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{conjecture}[theorem]{Conjecture}
+\newtheorem{openproblem}[theorem]{Open Problem}
+
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{example}[theorem]{Example}
+
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\np}{\operatorname{nextprime}}
+\newcommand{\prevprime}{\operatorname{prevprime}}
+\newcommand{\seqnum}[1]{\href{https://oeis.org/#1}{\rm \underline{#1}}}
+
+\title{Computational Extension of OEIS Sequence A052075:
+A New Term and an Exhaustive Search to $4 \times 10^{14}$}
+
+\author{
+Carlo Corti\\
+Independent researcher\\
+21-040 Kalin\'owka\\
+Poland\\
+\texttt{carlo.corti@outlook.com}
+}
+
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+We extend OEIS sequence \seqnum{A052075}, which consists of primes whose
+successor prime appears as a contiguous decimal substring of the cube.
+We carry out an exhaustive computation over the interval from
+$6.9 \times 10^{12}$ to $4 \times 10^{14}$ using a segmented sieve of
+Eratosthenes, arbitrary-precision arithmetic, and an exact modular
+filter for trailing matches.
+The search examines approximately $1.2 \times 10^{13}$ prime candidates
+in 37 contiguous segments and finds exactly one new term,
+$a(16) = 287\,902\,832\,031\,253$, the first addition since 2018.
+This computation yields the improved lower bound
+$a(17) > 4 \times 10^{14}$.
+We also prove a congruential restriction on trailing matches modulo~10
+and discuss a heuristic model suggesting that the sequence is infinite.
+\end{abstract}
+
+2020 Mathematics Subject Classification: Primary 11A41;
+Secondary 11Y55, 11N05, 11A07.
+
+Key words and phrases: prime number, integer sequence,
+substring, cube of a prime, segmented sieve, computational number
+theory.
+
+\section{Introduction}
+\label{sec:intro}
+
+A prime $p$ belongs to sequence \seqnum{A052075} if the decimal
+representation of its successor prime $q = \np(p)$ appears as a
+contiguous substring of the decimal representation of $p^3$.
+De Geest \cite{DeGeest2000} introduced the sequence in January~2000,
+and Handler \cite{Handler2006} extended it to~15 terms in~2006.
+The most recent OEIS entry \cite{OEIS_A052075} records the lower bound
+$a(16) > 6.9 \times 10^{12}$ due to Resta \cite{Resta2018},
+established in July~2018.
+
+The computational difficulty has two distinct sources.
+First, the number of primes below $X$ grows as $X / \ln X$ by the
+prime number theorem, so an exhaustive search to $X$ requires testing
+on the order of $X / \ln X$ candidates.
+Second, computing $p^3$ for a 15-digit prime requires approximately
+45-digit arithmetic, which overflows all standard fixed-width integer
+types.
+Specifically, for $p > 6.98 \times 10^{12}$ the cube exceeds the
+capacity of \texttt{\_\_uint128\_t}; the exact threshold is
+$(2^{128} - 1)^{1/3} \approx 6.981 \times 10^{12}$.
+Therefore arbitrary-precision arithmetic is required throughout
+the searched interval.
+
+The present work resolves both difficulties.
+We use the GNU Multiple Precision Arithmetic Library
+(GMP) \cite{GMP} for exact 45-digit cube computation, and we introduce
+a modular filter that detects trailing-position matches with very high
+efficiency.
+The resulting implementation exhausts $[6.9 \times 10^{12},
+4 \times 10^{14}]$ in about 66 elapsed hours on a commodity workstation.
+
+The main results are as follows.
+\begin{enumerate}
+\item $a(16) = 287\,902\,832\,031\,253$ (Theorem~\ref{thm:a16}),
+      the first new term of \seqnum{A052075} since 2018.
+\item $a(17) > 4 \times 10^{14}$ (Theorem~\ref{thm:a17}),
+      extending Resta's bound by a factor of approximately~58.
+\item A congruential classification of trailing matches in
+      Proposition~\ref{prop:mod10}.
+\item A heuristic discussion suggesting that \seqnum{A052075} is infinite.
+\end{enumerate}
+
+\subsection{Notation}
+\label{sec:notation}
+
+Throughout the paper, $p$ denotes a prime, $q = \np(p)$ its successor
+prime, and $g = q - p$ the prime gap.
+We write $\lfloor x \rfloor$ for the floor function and $\pi(x)$ for
+the prime-counting function.
+All logarithms are natural unless otherwise stated.
+We use the notation $[L, R)$ for half-open integer intervals.
+For any positive integer $n$, we denote by $s(n)$ the decimal string
+of $n$ without leading zeros, and by
+$d(n) = \lfloor \log_{10} n \rfloor + 1$ its digit count.
+
+\section{Algorithm}
+\label{sec:algorithm}
+
+\subsection{Segmented sieve}
+\label{sec:sieve}
+
+Candidate primes are enumerated by a segmented sieve of
+Eratosthenes \cite{Sorenson1991}.
+The search interval $[L, R)$ is divided into macro-blocks of width
+$W = 1.28 \times 10^{8}$.
+Within each block, a standard byte-array sieve is applied after
+precomputing all primes up to $\sqrt{R}$ by a preparatory sieve.
+OpenMP \cite{OpenMP} parallelism is applied across macro-blocks.
+With 16 logical threads on the test hardware, the implementation
+achieves a throughput of $45$--$59 \times 10^6$ prime evaluations
+per second, or approximately $3.1 \times 10^6$ per thread, decreasing
+slowly with the digit count of $p$ because of the growing cost of
+GMP arithmetic.
+
+For primes $p \leq 6.98 \times 10^{12}$, the cube $p^3$ fits in
+\texttt{\_\_uint128\_t} and no GMP arithmetic is needed.
+For larger primes the implementation uses \texttt{mpz\_t} arithmetic.
+Primality of candidates is guaranteed by the sieve construction;
+independent verification of the new term uses deterministic
+Miller--Rabin \cite{CrandallPomerance2005}.
+
+\subsection{Substring matching}
+\label{sec:matching}
+
+Given a prime $p$ and $q = \np(p)$, a match occurs when the decimal
+string $s(q)$ is a contiguous substring of $s(p^3)$.
+Let $d_p = d(p)$ and $d_q = d(q)$ denote the digit counts of $p$
+and $q$, respectively.
+In the vast majority of cases in the searched interval, $d_q = d_p$.
+The exception occurs for the finitely many primes whose successor
+prime crosses a power-of-10 boundary (e.g., $\np(9\,999\,999\,999\,971)
+= 10\,000\,000\,000\,037$, so $d_q = d_p + 1$).
+The implementation uses the exact value of $d_q$ in all cases.
+The digit count of $p^3$ satisfies
+$d(p^3) \in \{3d_p - 2,\; 3d_p - 1,\; 3d_p\}$;
+we write $D = d(p^3)$ for the exact value.
+
+We call the match \emph{trailing} if $s(q)$ occupies the last $d_q$
+digits of $s(p^3)$, that is, if $p^3 \equiv q \pmod{10^{d_q}}$.
+We call it \emph{leading} if $s(q)$ occupies the first $d_q$ digits,
+and \emph{interior} otherwise.
+Among the 16 known terms, trailing matches occur for $n = 10, 12, 15,
+16$, and leading matches occur for $n = 1, 2, 13$;
+see Table~\ref{tab:oracle}.
+
+\subsection{Modular filter for trailing matches}
+\label{sec:filter}
+
+The trailing condition $p^3 \equiv q \pmod{10^{d_q}}$ can be rewritten
+purely in terms of $p$ and the prime gap $g = q - p$ as
+\begin{equation}
+ p^3 \equiv p + g \pmod{10^{d_q}}.
+\label{eq:trailing}
+\end{equation}
+This simplifies to
+\begin{equation}
+ p(p^2 - 1) \equiv g \pmod{10^{d_q}}.
+\label{eq:filter}
+\end{equation}
+
+\begin{lemma}
+\label{lem:filter}
+A prime $p$ with $\np(p) = p + g$ satisfies the trailing-match
+condition if and only if $p(p^2 - 1) \equiv g \pmod{10^{d_q}}$,
+where $d_q = \lfloor \log_{10}(p + g) \rfloor + 1$.
+\end{lemma}
+
+\begin{proof}
+The trailing condition $p^3 \equiv q \pmod{10^{d_q}}$ is equivalent
+to $p^3 - q \equiv 0 \pmod{10^{d_q}}$.
+Substituting $q = p + g$ gives
+$p^3 - p - g \equiv 0 \pmod{10^{d_q}}$,
+which is equivalent to $p(p^2 - 1) \equiv g \pmod{10^{d_q}}$.
+\end{proof}
+
+The filter of Lemma~\ref{lem:filter} yields an immediate structural
+consequence.
+
+\begin{proposition}
+\label{prop:mod10}
+Let $p > 5$ be a prime with $\np(p) = p + g$.
+If $p$ admits a trailing match, then
+\[
+ g \equiv \begin{cases}
+ 0 \pmod{10}, & \text{if } p \equiv 1 \pmod{10}, \\
+ 4 \pmod{10}, & \text{if } p \equiv 3 \pmod{10}, \\
+ 6 \pmod{10}, & \text{if } p \equiv 7 \pmod{10}, \\
+ 0 \pmod{10}, & \text{if } p \equiv 9 \pmod{10}.
+ \end{cases}
+\]
+\end{proposition}
+
+\begin{proof}
+By Lemma~\ref{lem:filter}, a trailing match requires
+$p(p^2 - 1) \equiv g \pmod{10^{d_q}}$, and hence
+$p(p^2 - 1) \equiv g \pmod{10}$.
+Since $p > 5$ is prime, $p \bmod 10 \in \{1, 3, 7, 9\}$.
+We compute $p(p^2 - 1) \bmod 10$ for each residue class:
+\begin{align*}
+ p \equiv 1 \pmod{10} &\implies p(p^2 - 1) \equiv 1 \cdot 0 = 0 \pmod{10}, \\
+ p \equiv 3 \pmod{10} &\implies p(p^2 - 1) \equiv 3 \cdot 8 = 24 \equiv 4 \pmod{10}, \\
+ p \equiv 7 \pmod{10} &\implies p(p^2 - 1) \equiv 7 \cdot 48 = 336 \equiv 6 \pmod{10}, \\
+ p \equiv 9 \pmod{10} &\implies p(p^2 - 1) \equiv 9 \cdot 80 = 720 \equiv 0 \pmod{10}.
+\end{align*}
+This proves the claim.
+\end{proof}
+
+\begin{remark}
+Proposition~\ref{prop:mod10} is consistent with all four trailing
+matches among the 16 known terms.
+For $a(10)$ we have $p \equiv 7$ and $g = 56 \equiv 6 \pmod{10}$;
+for $a(12)$ we have $p \equiv 7$ and $g = 96 \equiv 6 \pmod{10}$;
+for $a(15)$ we have $p \equiv 9$ and $g = 40 \equiv 0 \pmod{10}$;
+and for $a(16)$ we have $p \equiv 3$ and $g = 24 \equiv 4 \pmod{10}$.
+\end{remark}
+
+\begin{remark}
+The classification can be extended to higher moduli by applying the
+Chinese remainder theorem to the factors $2^k$ and $5^k$ of $10^k$.
+For example, modulo $100$ one obtains a finer partition of admissible
+residue pairs $(p \bmod 100, g \bmod 100)$, further restricting the
+candidates that can produce a trailing match.
+\end{remark}
+
+The modular filter of Lemma~\ref{lem:filter} is exact for trailing
+matches: it accepts a candidate if and only if a trailing match
+occurs.
+In the implementation, the filter is evaluated as a fast 128-bit
+modular computation for every prime $p$.
+Candidates that pass the filter are flagged as potential trailing
+matches and recorded immediately, without waiting for the full
+substring scan.
+Candidates that do not pass the filter are not discarded: every prime
+in the search interval proceeds to the full computation of $p^3$ and
+the complete scan of $s(p^3)$ for $s(q)$, so leading and interior
+matches are not missed.
+
+As a rough heuristic sanity check, for 15-digit primes the average
+prime gap near $10^{15}$ is approximately $\ln(10^{15}) \approx 35$
+by the prime number theorem.
+This gives a theoretical expected number of trailing-match candidates
+of order $(35 / 10^{15}) \times 1.2 \times 10^{13} \approx 0.4$
+over the searched interval, consistent with finding exactly one such
+candidate ($a(16)$) and zero spurious trailing hits.
+
+\section{Computational results}
+\label{sec:results}
+
+\subsection{Oracle verification}
+\label{sec:oracle}
+
+All 15 previously known terms were verified independently at the start
+of every search segment.
+For each term $a(n)$, we confirmed the primality of $p$, the
+correctness of $\np(p)$, the exact value of $p^3$, and the substring
+match at the stated position.
+Table~\ref{tab:oracle} lists the complete oracle set, including the
+new term $a(16)$.
+
+\begin{table}[ht]
+\begin{center}
+\small
+\begin{tabular}{rllrrl}
+\toprule
+$n$ & $a(n) = p$ & $\np(p)$ & pos & len & type \\
+\midrule
+1  & 11                & 13                & 0  & 4  & L \\
+2  & 101               & 103               & 0  & 7  & L \\
+3  & 2\,239            & 2\,243            & 2  & 11 & I \\
+4  & 34\,297           & 34\,301           & 2  & 14 & I \\
+5  & 43\,789           & 43\,793           & 4  & 14 & I \\
+6  & 53\,549           & 53\,551           & 1  & 15 & I \\
+7  & 535\,487          & 535\,489          & 1  & 18 & I \\
+8  & 59\,897\,017      & 59\,897\,039      & 14 & 24 & I \\
+9  & 430\,784\,719     & 430\,784\,737     & 3  & 26 & I \\
+10 & 2\,549\,592\,677  & 2\,549\,592\,733  & 19 & 29 & T \\
+11 & 2\,837\,138\,669  & 2\,837\,138\,677  & 1  & 29 & I \\
+12 & 97\,969\,345\,967 & 97\,969\,346\,063 & 22 & 33 & T \\
+13 & 100\,000\,000\,019 & 100\,000\,000\,057 & 0 & 34 & L \\
+14 & 328\,096\,840\,219 & 328\,096\,840\,223 & 20 & 35 & I \\
+15 & 4\,110\,739\,763\,869 & 4\,110\,739\,763\,909 & 25 & 38 & T \\
+\midrule
+16 & 287\,902\,832\,031\,253 & 287\,902\,832\,031\,277 & 29 & 44 & T \\
+\bottomrule
+\end{tabular}
+\caption{Complete known terms of \seqnum{A052075}.
+Column pos gives the 0-based starting position of $\np(p)$ in $s(p^3)$;
+column len gives the digit count $D = d(p^3)$;
+column type classifies the match as leading (L), trailing (T),
+or interior (I).
+Full values of $p^3$ for all 16 terms are available in the oracle CSV
+file at the GitHub repository.}
+\label{tab:oracle}
+\end{center}
+\end{table}
+
+\subsection{New term: \texorpdfstring{$a(16)$}{a(16)}}
+\label{sec:a16}
+
+The exhaustive search of the interval $[6.9 \times 10^{12},
+4 \times 10^{14}]$ yields exactly one new term.
+
+\begin{theorem}
+\label{thm:a16}
+We have $a(16) = 287\,902\,832\,031\,253$.
+\end{theorem}
+
+\begin{proof}
+We verify the four defining properties.
+\begin{enumerate}
+\item $p = 287\,902\,832\,031\,253$ is prime, as confirmed by
+      \texttt{sympy.isprime}.
+\item $q = \np(p) = 287\,902\,832\,031\,277$, with gap $g = 24$,
+      as confirmed by \texttt{sympy.nextprime}.
+      This also shows that every integer in the open interval
+      $(p, q)$ is composite.
+\item The cube is the 44-digit integer
+      \[
+      p^3 = 23\,863\,701\,656\,637\,949\,988\,435\,953\,863\,
+      287\,902\,832\,031\,277,
+      \]
+      as confirmed by GMP and by Python \texttt{int} arithmetic.
+\item The decimal string of $q$ occupies positions~$29$ through~$43$
+      of $s(p^3)$, using 0-based indexing.
+      Thus the last 15 digits of the cube equal $q$, so this is a
+      trailing match.
+\end{enumerate}
+The campaign summary in Tables~\ref{tab:campaign_a}
+and~\ref{tab:campaign_b} documents the exhaustiveness of the search
+on $[6.9 \times 10^{12}, 4 \times 10^{14}]$.
+\end{proof}
+
+\begin{remark}
+The modular filter in \eqref{eq:filter} confirms
+$p(p^2 - 1) \equiv 24 \pmod{10^{15}}$.
+Indeed, $p \equiv 287\,902\,832\,031\,253 \pmod{10^{15}}$,
+so $p(p^2 - 1) \bmod 10^{15} = 24$.
+\end{remark}
+
+\subsection{Improved lower bound}
+\label{sec:lowerbound}
+
+\begin{theorem}
+\label{thm:a17}
+We have $a(17) > 4 \times 10^{14}$.
+\end{theorem}
+
+\begin{proof}
+This is a computational theorem: the conclusion rests on the verified
+exhaustive search documented in Tables~\ref{tab:campaign_a}
+and~\ref{tab:campaign_b}.
+That search covers every prime in $[6.9 \times 10^{12},
+4 \times 10^{14}]$ and detects no match of any type---leading,
+trailing, or interior---other than the single term $a(16)$ found in
+segment~S28.
+By Theorem~\ref{thm:a16}, this term equals
+$287\,902\,832\,031\,253$, which lies in
+$[6.9 \times 10^{12}, 4 \times 10^{14}]$.
+Therefore $a(17)$, the next term after $a(16)$, must exceed
+$4 \times 10^{14}$.
+In particular, segments S29 through S37 cover
+$[2.92 \times 10^{14}, 4 \times 10^{14}]$ with zero hits,
+confirming the absence of any additional term in that sub-interval.
+\end{proof}
+
+\subsection{Campaign summary}
+\label{sec:campaign}
+
+The search was executed as 37 contiguous segments on a workstation
+with an AMD Ryzen~9 7940HS processor (8~cores, 16~threads),
+64~GB DDR5 RAM, running Linux Mint~22.3.
+Tables~\ref{tab:campaign_a} and~\ref{tab:campaign_b} summarize the
+key parameters of each segment.
+
+\begin{table}[ht]
+\begin{center}
+\small
+\begin{tabular}{rlrrrl}
+\toprule
+Seg & Range $[L, R) \times 10^{12}$ & Primes ($\times 10^9$)
+    & Elapsed (s) & Hits & Date \\
+\midrule
+S01 & $[6.9,\;14.9)$    & 266.7 & 4522 & 0 & 2026-03-24 \\
+S02 & $[14.9,\;22.9)$   & 261.8 & 4576 & 0 & 2026-03-24 \\
+S03 & $[22.9,\;30.9)$   & 258.7 & 4624 & 0 & 2026-03-24 \\
+S04 & $[30.9,\;38.9)$   & 256.6 & 4688 & 0 & 2026-03-25 \\
+S05 & $[38.9,\;46.9)$   & 254.9 & 4687 & 0 & 2026-03-25 \\
+S06 & $[46.9,\;54.9)$   & 253.5 & 4647 & 0 & 2026-03-25 \\
+S07 & $[54.9,\;62.9)$   & 252.3 & 4695 & 0 & 2026-03-25 \\
+S08 & $[62.9,\;70.9)$   & 251.3 & 4633 & 0 & 2026-03-25 \\
+S09 & $[70.9,\;78.9)$   & 250.4 & 4648 & 0 & 2026-03-25 \\
+S10 & $[78.9,\;86.9)$   & 249.6 & 4714 & 0 & 2026-03-25 \\
+S11 & $[86.9,\;94.9)$   & 248.9 & 4737 & 0 & 2026-03-26 \\
+S12 & $[94.9,\;100.0)$  & 158.3 & 3051 & 0 & 2026-03-26 \\
+S13 & $[100.0,\;112.0)$ & 371.6 & 7030 & 0 & 2026-03-26 \\
+S14 & $[112.0,\;124.0)$ & 370.4 & 7198 & 0 & 2026-03-26 \\
+S15 & $[124.0,\;136.0)$ & 369.3 & 7074 & 0 & 2026-03-26 \\
+S16 & $[136.0,\;148.0)$ & 368.3 & 7172 & 0 & 2026-03-27 \\
+S17 & $[148.0,\;160.0)$ & 367.3 & 7152 & 0 & 2026-03-27 \\
+S18 & $[160.0,\;172.0)$ & 366.5 & 7432 & 0 & 2026-03-27 \\
+S19 & $[172.0,\;184.0)$ & 365.7 & 7141 & 0 & 2026-03-27 \\
+\bottomrule
+\end{tabular}
+\caption{Campaign summary, segments S01--S19.
+Segment widths are $8 \times 10^{12}$ for S01--S11
+and $12 \times 10^{12}$ for S13--S19
+(S12 has width $5.1 \times 10^{12}$).
+The time column reports elapsed wall-clock time of the C~process
+with 16 OpenMP threads.
+Prime counts are rounded to one decimal place; the total in
+Table~\ref{tab:campaign_b} is computed from unrounded raw counts.}
+\label{tab:campaign_a}
+\end{center}
+\end{table}
+
+\begin{table}[ht]
+\begin{center}
+\small
+\begin{tabular}{rlrrrl}
+\toprule
+Seg & Range $[L, R) \times 10^{12}$ & Primes ($\times 10^9$)
+    & Elapsed (s) & Hits & Date \\
+\midrule
+S20 & $[184.0,\;196.0)$ & 365.0 & 7302 & 0 & 2026-03-28 \\
+S21 & $[196.0,\;208.0)$ & 364.3 & 7144 & 0 & 2026-03-28 \\
+S22 & $[208.0,\;220.0)$ & 363.7 & 7290 & 0 & 2026-03-28 \\
+S23 & $[220.0,\;232.0)$ & 363.1 & 7343 & 0 & 2026-03-28 \\
+S24 & $[232.0,\;244.0)$ & 362.5 & 7471 & 0 & 2026-03-29 \\
+S25 & $[244.0,\;256.0)$ & 362.0 & 7377 & 0 & 2026-03-29 \\
+S26 & $[256.0,\;268.0)$ & 361.5 & 7387 & 0 & 2026-03-29 \\
+S27 & $[268.0,\;280.0)$ & 361.0 & 7406 & 0 & 2026-03-29 \\
+S28 & $[280.0,\;292.0)$ & 360.5 & 7480 & 1 & 2026-03-30 \\
+S29 & $[292.0,\;304.0)$ & 360.1 & 7412 & 0 & 2026-03-30 \\
+S30 & $[304.0,\;316.0)$ & 359.6 & 7970 & 0 & 2026-03-30 \\
+S31 & $[316.0,\;328.0)$ & 359.2 & 7352 & 0 & 2026-03-30 \\
+S32 & $[328.0,\;340.0)$ & 358.8 & 7345 & 0 & 2026-03-30 \\
+S33 & $[340.0,\;352.0)$ & 358.5 & 7434 & 0 & 2026-03-31 \\
+S34 & $[352.0,\;364.0)$ & 358.1 & 7493 & 0 & 2026-03-31 \\
+S35 & $[364.0,\;376.0)$ & 357.7 & 7361 & 0 & 2026-03-31 \\
+S36 & $[376.0,\;388.0)$ & 357.4 & 7434 & 0 & 2026-03-31 \\
+S37 & $[388.0,\;400.0)$ & 357.1 & 7446 & 0 & 2026-03-31 \\
+\midrule
+Total & $[6.9,\;400.0)$ & $12\,031.9$ & $237\,868$ & 1 & \\
+\bottomrule
+\end{tabular}
+\caption{Campaign summary, segments S20--S37, and totals.
+Elapsed times in seconds; the total row gives the sum over all 37
+segments.
+Prime counts are rounded to one decimal place; the total is computed
+from unrounded raw counts.}
+\label{tab:campaign_b}
+\end{center}
+\end{table}
+
+The total elapsed wall-clock time is $237\,868$ seconds,
+or about 66.1 hours.
+With 16 OpenMP threads, the average throughput is approximately
+$50 \times 10^6$ prime evaluations per second, corresponding to
+roughly $3.1 \times 10^6$ evaluations per thread.
+The calendar elapsed time is approximately 7.2 days, from
+2026-03-24 to 2026-03-31, reflecting discontinuous use of the
+workstation.
+
+\subsection{Independent verification}
+\label{sec:verification}
+
+The new term $a(16) = 287\,902\,832\,031\,253$ was verified
+independently in Python~3 with \texttt{sympy}
+(version~1.14.0) as follows.
+
+\begin{enumerate}
+\item \texttt{sympy.isprime(287902832031253)} returns \texttt{True}.
+\item \texttt{sympy.nextprime(287902832031253)} returns
+      \texttt{287902832031277}.
+\item \texttt{287902832031253**3} evaluates to\\
+      \texttt{23863701656637949988435953863287902832031277}.
+\item \texttt{str(287902832031277) in str(287902832031253**3)}
+      returns \texttt{True}, at position~29 of the 44-digit string.
+\end{enumerate}
+
+All four conditions are satisfied.
+For numbers below $2^{64} \approx 1.84 \times 10^{19}$,
+the \texttt{sympy.isprime} function performs a deterministic
+primality test based on trial division and deterministic
+Miller--Rabin with verified witness sets \cite{SymPy},
+so the verification in step~1 is conclusive rather than probabilistic.
+The value $p \approx 2.88 \times 10^{14}$ lies well below this bound.
+
+\section{Probabilistic heuristic}
+\label{sec:heuristic}
+
+\subsection{Expected density of terms}
+\label{sec:density}
+
+For a prime $p$ with $d = d(p)$ decimal digits, let $q = \np(p)$,
+which also has $d$ digits for all sufficiently large $p$ in a fixed
+decade.
+The cube $p^3$ has $D \in \{3d - 2,\; 3d - 1,\; 3d\}$ digits.
+For a rough estimate we take $D \approx 3d$.
+
+The probability that a uniformly chosen $d$-digit string $s(q)$
+appears as a substring of a uniformly chosen $D$-digit string
+$s(p^3)$ is approximately
+\begin{equation}
+P_{\mathrm{sub}} \approx \frac{D - d + 1}{10^d} \approx \frac{2d}{10^d},
+\label{eq:psub}
+\end{equation}
+since there are approximately $D - d + 1 \approx 2d$ possible starting
+positions and each position matches with probability $10^{-d}$.
+
+The number of $d$-digit primes is approximately
+$\pi(10^d) - \pi(10^{d-1}) \approx 8 \cdot 10^{d-1} / d$
+(a standard rough estimate from the prime number theorem).
+The expected number of terms of \seqnum{A052075} in the $d$-digit
+decade is therefore
+\begin{equation}
+E_d \approx \frac{8 \cdot 10^{d-1}}{d} \cdot \frac{2d}{10^d} = 1.6.
+\label{eq:Ed_raw}
+\end{equation}
+
+The strings $s(q)$ and $s(p^3)$ are not independent, because both are
+determined by $p$.
+The study of digit strings in prime-related sequences \cite{Dudek2014}
+suggests that such arithmetic correlations can produce a moderate
+downward bias.
+Empirically, the 15 known terms in the 12 decades from $d = 2$ through
+$d = 13$ give an observed density of $15/12 = 1.25$ terms per decade.
+The ratio of this observed density to the crude estimate
+$E_d \approx 1.6$ yields a correction factor of
+\[
+\frac{15}{12 \times 1.6} \approx 0.78.
+\]
+Applying this correction factor to the crude estimate gives an
+adjusted expected count of $0.78 \times 1.6 = 1.25$ terms per
+decade, consistent with the observed density.
+
+\subsection{Implication for infinitude}
+\label{sec:infinitude}
+
+Since the adjusted estimate of approximately 1.25 terms per decade
+remains bounded away from zero across decades, the heuristic model
+suggests that sufficiently large decades should continue to contain
+terms of \seqnum{A052075} with positive probability.
+Under an additional assumption that occurrences in well-separated
+decades are approximately independent---which is plausible but
+unproved---this points toward infinitely many terms.
+This is only a heuristic argument.
+The events are not independent across primes, and the
+approximation~\eqref{eq:psub} treats $s(q)$ and $s(p^3)$ as
+independent, which is false.
+The discussion serves only as motivation for the following conjecture.
+
+\begin{conjecture}
+\label{conj:infinite}
+The sequence \seqnum{A052075} is infinite.
+\end{conjecture}
+
+A rigorous proof of Conjecture~\ref{conj:infinite} seems to be beyond
+current methods, since the problem mixes the distribution of prime gaps
+with the non-algebraic structure of decimal representations.
+
+\section{Conclusion and open problems}
+\label{sec:conclusion}
+
+We determine $a(16) = 287\,902\,832\,031\,253$, the first new term of
+\seqnum{A052075} since 2018, and establish the improved lower bound
+$a(17) > 4 \times 10^{14}$.
+The computation requires about 66 elapsed hours on a commodity
+workstation and is made feasible by GMP arithmetic, an exact modular
+filter for trailing-position candidates, and an OpenMP-parallelized
+segmented sieve.
+
+The main open problems are as follows.
+
+\begin{openproblem}
+\label{op:a17}
+Determine $a(17)$.
+Under the heuristic model, the interval $[4 \times 10^{14}, 10^{15}]$
+has logarithmic length $\log_{10}(2.5) \approx 0.398$ decades.
+Applying the observed density of 1.25 terms per decade gives an
+expected count of about $0.398 \times 1.25 \approx 0.50$, so the
+Poisson-model probability of at least one term in this interval
+is approximately $1 - e^{-0.50} \approx 0.39$.
+\end{openproblem}
+
+\begin{openproblem}
+\label{op:infinite}
+Prove or disprove Conjecture~\ref{conj:infinite}.
+\end{openproblem}
+
+\begin{openproblem}
+\label{op:positions}
+Characterize which positions, namely leading, trailing, and interior,
+can support a match, and determine whether trailing matches are denser
+than interior matches.
+Among the 16 known terms, 4 are trailing, 3 are leading, and
+9 are interior.
+\end{openproblem}
+
+\begin{openproblem}
+\label{op:analogues}
+Investigate the analogous sequences for $p^k$ with $k \geq 2$,
+including the square analogue
+\seqnum{A052073} \cite{OEIS_A052073},
+the related sequence \seqnum{A321796} \cite{OEIS_A321796},
+in which $\prevprime(p)$ is a substring of $p^3$,
+and the sequence \seqnum{A381969} \cite{OEIS_A381969},
+in which $\prevprime(p)$ is a substring of $p^2$.
+\end{openproblem}
+
+\section{Acknowledgments}
+
+The author thanks the OEIS contributors whose earlier computations
+established the initial terms and the previous lower bound for
+\seqnum{A052075}.
+
+\section{Data availability}
+
+The complete dataset, including the oracle CSV file, per-segment logs,
+campaign summary, and machine-readable results, is available at
+the GitHub repository
+\url{https://github.com/carcorti/OEIS-A052075}
+and at the corresponding Zenodo archive (DOI to be updated before
+final submission).
+The results are also available through the OEIS entry
+for \seqnum{A052075}.
+
+\section{Code availability}
+
+The C source file \texttt{a052075\_v4.c} (version~4 of the search
+program), the associated Makefile, and a Python verification script
+\texttt{verify\_a052075.py} are available at the GitHub and Zenodo
+repositories listed in the previous section.
+
+\section{AI use disclosure}
+
+The author used large language model tools during the preparation of
+this work.
+The AI tools assisted with code review, verification of computational
+results, and identifying weaknesses in the exposition.
+No prose in this manuscript was generated by a large language model.
+All mathematical arguments, computational claims, and final wording
+of the manuscript were produced and verified by the author, who takes
+full scientific responsibility for the paper.
+
+\section{Sequences}
+
+The sequences appearing in this paper are as follows.
+
+\begin{itemize}
+\item \seqnum{A052073}, the square analogue of \seqnum{A052075}
+      mentioned in Open Problem~\ref{op:analogues}.
+\item \seqnum{A052075}, primes $p$ such that the successor prime
+      $\np(p)$ appears as a contiguous decimal substring of $p^3$.
+\item \seqnum{A321796}, primes $p$ such that the predecessor prime
+      $\prevprime(p)$ appears as a contiguous decimal substring
+      of $p^3$, mentioned in Open Problem~\ref{op:analogues}.
+\item \seqnum{A381969}, primes $p$ such that the predecessor prime
+      $\prevprime(p)$ appears as a contiguous decimal substring
+      of $p^2$, mentioned in Open Problem~\ref{op:analogues}.
+\end{itemize}
+
+\bibliographystyle{jis}
+\bibliography{A052075_rev11}
+
+\end{document}

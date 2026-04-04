@@ -1,0 +1,67 @@
+\begin{thebibliography}{10}
+
+\bibitem{CrandallPomerance2005}
+R.~Crandall and C.~Pomerance, {\em Prime Numbers: A Computational Perspective},
+  Springer, 2nd edition, 2005.
+
+\bibitem{Dudek2014}
+A.~W. Dudek, Some notes on digit strings in the primes, arxiv preprint
+  arXiv:1407.7324 [math.NT], 2014. Available at
+  \url{https://arxiv.org/abs/1407.7324}.
+
+\bibitem{DeGeest2000}
+P.~De Geest, The {O}n-{L}ine {E}ncyclopedia of {I}nteger {S}equences, published
+  electronically at \url{https://oeis.org}, 2000.
+\newblock Sequence {A052075}, contributed January 15 2000.
+
+\bibitem{GMP}
+T.~Granlund and the {GMP}~development team, {GNU} multiple precision arithmetic
+  library, Available at \url{https://gmplib.org}, 2023.
+\newblock Version 6.3.0.
+
+\bibitem{Handler2006}
+S.~Handler, Comment on sequence {A052075} (terms 8--15), The {O}n-{L}ine
+  {E}ncyclopedia of {I}nteger {S}equences, published electronically at
+  \url{https://oeis.org}, 2006.
+
+\bibitem{OEIS_A052075}
+{OEIS Foundation Inc.}, The {O}n-{L}ine {E}ncyclopedia of {I}nteger
+  {S}equences, published electronically at \url{https://oeis.org}, 2026.
+\newblock Sequence {A052075}.
+
+\bibitem{OEIS_A052073}
+{OEIS Foundation Inc.}, The {O}n-{L}ine {E}ncyclopedia of {I}nteger
+  {S}equences, published electronically at \url{https://oeis.org}, 2026.
+\newblock Sequence {A052073}.
+
+\bibitem{OEIS_A321796}
+{OEIS Foundation Inc.}, The {O}n-{L}ine {E}ncyclopedia of {I}nteger
+  {S}equences, published electronically at \url{https://oeis.org}, 2026.
+\newblock Sequence {A321796}.
+
+\bibitem{OEIS_A381969}
+{OEIS Foundation Inc.}, The {O}n-{L}ine {E}ncyclopedia of {I}nteger
+  {S}equences, published electronically at \url{https://oeis.org}, 2025.
+\newblock Sequence {A381969}.
+
+\bibitem{OpenMP}
+{OpenMP Architecture Review Board}, {OpenMP} application programming interface,
+  Available at \url{https://www.openmp.org}, 2021.
+\newblock Version 5.2.
+
+\bibitem{Resta2018}
+G.~Resta, Comment on sequence {A052075}: $a(16) > 6.9 \times 10^{12}$, The
+  {O}n-{L}ine {E}ncyclopedia of {I}nteger {S}equences, published electronically
+  at \url{https://oeis.org}, 2018.
+
+\bibitem{Sorenson1991}
+J.~Sorenson, An analysis of two prime number sieves, Technical Report 1028,
+  Computer Sciences Department, University of Wisconsin--Madison, 1991.
+
+\bibitem{SymPy}
+{SymPy Development Team}, {\em SymPy: Python library for symbolic mathematics},
+  Available at \url{https://www.sympy.org}, 2024.
+\newblock Version 1.14.0; primality testing documentation at
+  \url{https://docs.sympy.org/latest/modules/ntheory.html}.
+
+\end{thebibliography}

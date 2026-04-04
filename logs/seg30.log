@@ -1,0 +1,155 @@
+============================================
+SEGMENTO S30 — Avvio: 2026-03-30_14:38:48
+Range: [304000000000000, 316000000000000]
+============================================
+A052075 — Primes p such that nextprime(p) is substring of p^3
+Version 4.0 — Carlo Corti, 2026
+
+======================================================
+ORACLE SET VERIFICATION — A052075 (v4)
+======================================================
+  OK   a( 1) =              11  |  p^3 OK  |  match@0/4
+  OK   a( 2) =             101  |  p^3 OK  |  match@0/7
+  OK   a( 3) =            2239  |  p^3 OK  |  match@2/11
+  OK   a( 4) =           34297  |  p^3 OK  |  match@2/14
+  OK   a( 5) =           43789  |  p^3 OK  |  match@4/14
+  OK   a( 6) =           53549  |  p^3 OK  |  match@1/15
+  OK   a( 7) =          535487  |  p^3 OK  |  match@1/18
+  OK   a( 8) =        59897017  |  p^3 OK  |  match@14/24
+  OK   a( 9) =       430784719  |  p^3 OK  |  match@3/26
+  OK   a(10) =      2549592677  |  p^3 OK  |  match@19/29  [TRAILING, filter=OK]
+  OK   a(11) =      2837138669  |  p^3 OK  |  match@1/29
+  OK   a(12) =     97969345967  |  p^3 OK  |  match@22/33  [TRAILING, filter=OK]
+  OK   a(13) =    100000000019  |  p^3 OK  |  match@0/34
+  OK   a(14) =    328096840219  |  p^3 OK  |  match@20/35
+  OK   a(15) =   4110739763869  |  p^3 OK  |  match@25/38  [TRAILING, filter=OK]
+------------------------------------------------------
+ALL 15 TERMS VERIFIED SUCCESSFULLY.
+
+======================================================
+A052075 SEARCH: [304000000000000, 316000000000000]
+======================================================
+
+Generating small primes up to 17776389...
+Found 1137901 small primes (largest: 17776357)
+
+Using 16 threads (macro-block size: 1000000000)
+
+  ... wave done: [304000000000001, 304128000000001), total 3838268258 primes, 46535061/sec, hits: 0, 1.1%, 82s elapsed
+  ... wave done: [304128000000001, 304256000000001), total 7676494305 primes, 45733682/sec, hits: 0, 2.1%, 168s elapsed
+  ... wave done: [304256000000001, 304384000000001), total 11514725765 primes, 45401055/sec, hits: 0, 3.2%, 254s elapsed
+  ... wave done: [304384000000001, 304512000000001), total 15352891028 primes, 44878685/sec, hits: 0, 4.3%, 342s elapsed
+  ... wave done: [304512000000001, 304640000000001), total 19191028569 primes, 44622576/sec, hits: 0, 5.3%, 430s elapsed
+  ... wave done: [304640000000001, 304768000000001), total 23029033213 primes, 44489721/sec, hits: 0, 6.4%, 518s elapsed
+  ... wave done: [304768000000001, 304896000000001), total 26867040155 primes, 44601457/sec, hits: 0, 7.5%, 602s elapsed
+  ... wave done: [304896000000001, 305024000000001), total 30704973090 primes, 44697690/sec, hits: 0, 8.5%, 687s elapsed
+  ... wave done: [305024000000001, 305152000000001), total 34542867458 primes, 44817580/sec, hits: 0, 9.6%, 771s elapsed
+  ... wave done: [305152000000001, 305280000000001), total 38380718417 primes, 44948171/sec, hits: 0, 10.7%, 854s elapsed
+  ... wave done: [305280000000001, 305408000000001), total 42218522021 primes, 44994390/sec, hits: 0, 11.7%, 938s elapsed
+  ... wave done: [305408000000001, 305536000000001), total 46056269535 primes, 44968469/sec, hits: 0, 12.8%, 1024s elapsed
+  ... wave done: [305536000000001, 305664000000001), total 49893978675 primes, 44968425/sec, hits: 0, 13.9%, 1110s elapsed
+  ... wave done: [305664000000001, 305792000000001), total 53731637441 primes, 44999791/sec, hits: 0, 14.9%, 1194s elapsed
+  ... wave done: [305792000000001, 305920000000001), total 57569244389 primes, 45008890/sec, hits: 0, 16.0%, 1279s elapsed
+  ... wave done: [305920000000001, 306048000000001), total 61406839506 primes, 44997259/sec, hits: 0, 17.1%, 1365s elapsed
+  ... wave done: [306048000000001, 306176000000001), total 65244368870 primes, 45035335/sec, hits: 0, 18.1%, 1449s elapsed
+  ... wave done: [306176000000001, 306304000000001), total 69081803990 primes, 45060677/sec, hits: 0, 19.2%, 1533s elapsed
+  ... wave done: [306304000000001, 306432000000001), total 72919227950 primes, 45047583/sec, hits: 0, 20.3%, 1619s elapsed
+  ... wave done: [306432000000001, 306560000000001), total 76756564200 primes, 44988686/sec, hits: 0, 21.3%, 1706s elapsed
+  ... wave done: [306560000000001, 306688000000001), total 80593865733 primes, 44928194/sec, hits: 0, 22.4%, 1794s elapsed
+  ... wave done: [306688000000001, 306816000000001), total 84431122655 primes, 44788534/sec, hits: 0, 23.5%, 1885s elapsed
+  ... wave done: [306816000000001, 306944000000001), total 88268354423 primes, 44659113/sec, hits: 0, 24.5%, 1976s elapsed
+  ... wave done: [306944000000001, 307072000000001), total 92105570823 primes, 44635187/sec, hits: 0, 25.6%, 2064s elapsed
+  ... wave done: [307072000000001, 307200000000001), total 95942692776 primes, 44665456/sec, hits: 0, 26.7%, 2148s elapsed
+  ... wave done: [307200000000001, 307328000000001), total 99779790529 primes, 44692421/sec, hits: 0, 27.7%, 2233s elapsed
+  ... wave done: [307328000000001, 307456000000001), total 103616783568 primes, 44721812/sec, hits: 0, 28.8%, 2317s elapsed
+  ... wave done: [307456000000001, 307584000000001), total 107453756817 primes, 44741621/sec, hits: 0, 29.9%, 2402s elapsed
+  ... wave done: [307584000000001, 307712000000001), total 111290667910 primes, 44741157/sec, hits: 0, 30.9%, 2487s elapsed
+  ... wave done: [307712000000001, 307840000000001), total 115127519128 primes, 44720748/sec, hits: 0, 32.0%, 2574s elapsed
+  ... wave done: [307840000000001, 307968000000001), total 118964369818 primes, 44744548/sec, hits: 0, 33.1%, 2659s elapsed
+  ... wave done: [307968000000001, 308096000000001), total 122801162356 primes, 44767275/sec, hits: 0, 34.1%, 2743s elapsed
+  ... wave done: [308096000000001, 308224000000001), total 126637915120 primes, 44789473/sec, hits: 0, 35.2%, 2827s elapsed
+  ... wave done: [308224000000001, 308352000000001), total 130474598143 primes, 44810141/sec, hits: 0, 36.3%, 2912s elapsed
+  ... wave done: [308352000000001, 308480000000001), total 134311242252 primes, 44829440/sec, hits: 0, 37.3%, 2996s elapsed
+  ... wave done: [308480000000001, 308608000000001), total 138147839464 primes, 44830547/sec, hits: 0, 38.4%, 3082s elapsed
+  ... wave done: [308608000000001, 308736000000001), total 141984405105 primes, 44861538/sec, hits: 0, 39.5%, 3165s elapsed
+  ... wave done: [308736000000001, 308864000000001), total 145820890732 primes, 44869084/sec, hits: 0, 40.5%, 3250s elapsed
+  ... wave done: [308864000000001, 308992000000001), total 149657316443 primes, 44905849/sec, hits: 0, 41.6%, 3333s elapsed
+  ... wave done: [308992000000001, 309120000000001), total 153493742038 primes, 44938416/sec, hits: 0, 42.7%, 3416s elapsed
+  ... wave done: [309120000000001, 309248000000001), total 157330108531 primes, 44963634/sec, hits: 0, 43.7%, 3499s elapsed
+  ... wave done: [309248000000001, 309376000000001), total 161166408071 primes, 44989353/sec, hits: 0, 44.8%, 3582s elapsed
+  ... wave done: [309376000000001, 309504000000001), total 165002646836 primes, 44998981/sec, hits: 0, 45.9%, 3667s elapsed
+  ... wave done: [309504000000001, 309632000000001), total 168838850532 primes, 45016466/sec, hits: 0, 46.9%, 3751s elapsed
+  ... wave done: [309632000000001, 309760000000001), total 172674989244 primes, 45037386/sec, hits: 0, 48.0%, 3834s elapsed
+  ... wave done: [309760000000001, 309888000000001), total 176511116636 primes, 45038563/sec, hits: 0, 49.1%, 3919s elapsed
+  ... wave done: [309888000000001, 310016000000001), total 180347181136 primes, 45041049/sec, hits: 0, 50.1%, 4004s elapsed
+  ... wave done: [310016000000001, 310144000000001), total 184183194341 primes, 45052954/sec, hits: 0, 51.2%, 4088s elapsed
+  ... wave done: [310144000000001, 310272000000001), total 188019136654 primes, 45073665/sec, hits: 0, 52.3%, 4171s elapsed
+  ... wave done: [310272000000001, 310400000000001), total 191855070125 primes, 45072983/sec, hits: 0, 53.3%, 4257s elapsed
+  ... wave done: [310400000000001, 310528000000001), total 195690966758 primes, 45085033/sec, hits: 0, 54.4%, 4340s elapsed
+  ... wave done: [310528000000001, 310656000000001), total 199526783067 primes, 45096266/sec, hits: 0, 55.5%, 4424s elapsed
+  ... wave done: [310656000000001, 310784000000001), total 203362557770 primes, 45108163/sec, hits: 0, 56.5%, 4508s elapsed
+  ... wave done: [310784000000001, 310912000000001), total 207198323787 primes, 45108704/sec, hits: 0, 57.6%, 4593s elapsed
+  ... wave done: [310912000000001, 311040000000001), total 211033973038 primes, 45109227/sec, hits: 0, 58.7%, 4678s elapsed
+  ... wave done: [311040000000001, 311168000000001), total 214869633790 primes, 45120540/sec, hits: 0, 59.7%, 4762s elapsed
+  ... wave done: [311168000000001, 311296000000001), total 218705216990 primes, 45130501/sec, hits: 0, 60.8%, 4846s elapsed
+  ... wave done: [311296000000001, 311424000000001), total 222540838754 primes, 45139790/sec, hits: 0, 61.9%, 4930s elapsed
+  ... wave done: [311424000000001, 311552000000001), total 226376349234 primes, 45137580/sec, hits: 0, 62.9%, 5015s elapsed
+  ... wave done: [311552000000001, 311680000000001), total 230211822912 primes, 45147491/sec, hits: 0, 64.0%, 5099s elapsed
+  ... wave done: [311680000000001, 311808000000001), total 234047244503 primes, 45154592/sec, hits: 0, 65.1%, 5183s elapsed
+  ... wave done: [311808000000001, 311936000000001), total 237882566461 primes, 45169042/sec, hits: 0, 66.1%, 5266s elapsed
+  ... wave done: [311936000000001, 312064000000001), total 241717860349 primes, 45170727/sec, hits: 0, 67.2%, 5351s elapsed
+  ... wave done: [312064000000001, 312192000000001), total 245553081051 primes, 45169190/sec, hits: 0, 68.3%, 5436s elapsed
+  ... wave done: [312192000000001, 312320000000001), total 249388258136 primes, 45177994/sec, hits: 0, 69.3%, 5520s elapsed
+  ... wave done: [312320000000001, 312448000000001), total 253223480767 primes, 45186920/sec, hits: 0, 70.4%, 5604s elapsed
+  ... wave done: [312448000000001, 312576000000001), total 257058577467 primes, 45194214/sec, hits: 0, 71.5%, 5688s elapsed
+  ... wave done: [312576000000001, 312704000000001), total 260893668524 primes, 45201397/sec, hits: 0, 72.5%, 5772s elapsed
+  ... wave done: [312704000000001, 312832000000001), total 264728745832 primes, 45208478/sec, hits: 0, 73.6%, 5856s elapsed
+  ... wave done: [312832000000001, 312960000000001), total 268563678363 primes, 45221414/sec, hits: 0, 74.7%, 5939s elapsed
+  ... wave done: [312960000000001, 313088000000001), total 272398614958 primes, 45227811/sec, hits: 0, 75.7%, 6023s elapsed
+  ... wave done: [313088000000001, 313216000000001), total 276233533345 primes, 45234401/sec, hits: 0, 76.8%, 6107s elapsed
+  ... wave done: [313216000000001, 313344000000001), total 280068354507 primes, 45241238/sec, hits: 0, 77.9%, 6191s elapsed
+  ... wave done: [313344000000001, 313472000000001), total 283903198751 primes, 45232599/sec, hits: 0, 78.9%, 6277s elapsed
+  ... wave done: [313472000000001, 313600000000001), total 287737958305 primes, 45213082/sec, hits: 0, 80.0%, 6364s elapsed
+  ... wave done: [313600000000001, 313728000000001), total 291572665359 primes, 45209849/sec, hits: 0, 81.1%, 6449s elapsed
+  ... wave done: [313728000000001, 313856000000001), total 295407353917 primes, 45216327/sec, hits: 0, 82.1%, 6533s elapsed
+  ... wave done: [313856000000001, 313984000000001), total 299241976860 primes, 45213808/sec, hits: 0, 83.2%, 6618s elapsed
+  ... wave done: [313984000000001, 314112000000001), total 303076529148 primes, 45205039/sec, hits: 0, 84.3%, 6704s elapsed
+  ... wave done: [314112000000001, 314240000000001), total 306911037500 primes, 45207266/sec, hits: 0, 85.3%, 6789s elapsed
+  ... wave done: [314240000000001, 314368000000001), total 310745521947 primes, 45202195/sec, hits: 0, 86.4%, 6875s elapsed
+  ... wave done: [314368000000001, 314496000000001), total 314579958841 primes, 45200530/sec, hits: 0, 87.5%, 6960s elapsed
+  ... wave done: [314496000000001, 314624000000001), total 318414319972 primes, 45185399/sec, hits: 0, 88.5%, 7047s elapsed
+  ... wave done: [314624000000001, 314752000000001), total 322248693324 primes, 45174722/sec, hits: 0, 89.6%, 7133s elapsed
+  ... wave done: [314752000000001, 314880000000001), total 326082988606 primes, 45166403/sec, hits: 0, 90.7%, 7220s elapsed
+  ... wave done: [314880000000001, 315008000000001), total 329917216617 primes, 45165412/sec, hits: 0, 91.7%, 7305s elapsed
+  ... wave done: [315008000000001, 315136000000001), total 333751373754 primes, 45155531/sec, hits: 0, 92.8%, 7391s elapsed
+  ... wave done: [315136000000001, 315264000000001), total 337585521840 primes, 45143920/sec, hits: 0, 93.9%, 7478s elapsed
+  ... wave done: [315264000000001, 315392000000001), total 341419631164 primes, 45138046/sec, hits: 0, 94.9%, 7564s elapsed
+  ... wave done: [315392000000001, 315520000000001), total 345253668846 primes, 45138449/sec, hits: 0, 96.0%, 7649s elapsed
+  ... wave done: [315520000000001, 315648000000001), total 349087728557 primes, 45133910/sec, hits: 0, 97.1%, 7734s elapsed
+  ... wave done: [315648000000001, 315776000000001), total 352921735975 primes, 45136642/sec, hits: 0, 98.1%, 7819s elapsed
+  ... wave done: [315776000000001, 315904000000001), total 356755669992 primes, 45129786/sec, hits: 0, 99.2%, 7905s elapsed
+  ... wave done: [315904000000001, 316000004194304), total 359631160041 primes, 45121316/sec, hits: 0, 100.0%, 7970s elapsed
+
+======================================================
+SEARCH COMPLETE
+======================================================
+
+Range: [304000000000001, 316000000000000]
+Threads: 16
+Primes tested: 359631160041
+Hits found: 0
+Trailing filter hits: 0
+Full checks: 359631160041
+Time: 7970.3 seconds (2.21 hours)
+Rate: 45121315 primes/sec (2820082/sec/thread)
+
+Per-decade statistics:
+  Digits  Primes tested    Hits
+     15    359631160041      0
+
+Hits found (sorted by p):
+
+CSV copiato in /home/carlo/MATH/OEIS/A052075/runs/a052075_log_304000000000000_316000000000000.csv
+
+Segmento S30 completato: 2026-03-30_16:51:38
+Spegnimento in 60 secondi...
