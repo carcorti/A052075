@@ -1,49 +1,43 @@
-\documentclass[12pt,reqno]{article}
-\usepackage{amsmath,amssymb,amsfonts,amsthm}
+\documentclass[11pt]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath,amssymb,amsthm}
 \usepackage{booktabs}
-\usepackage[hidelinks]{hyperref}
+\usepackage{float}
+\usepackage{geometry}
+\usepackage{hyperref}
+\usepackage{url}
 
-\theoremstyle{plain}
+\geometry{margin=1in}
+
 \newtheorem{theorem}{Theorem}
-\newtheorem{lemma}[theorem]{Lemma}
-\newtheorem{corollary}[theorem]{Corollary}
-\newtheorem{proposition}[theorem]{Proposition}
-\newtheorem{conjecture}[theorem]{Conjecture}
-\newtheorem{openproblem}[theorem]{Open Problem}
-
+\newtheorem{proposition}{Proposition}
+\newtheorem{lemma}{Lemma}
+\newtheorem{corollary}{Corollary}
+\newtheorem{conjecture}{Conjecture}
+\newtheorem{openproblem}{Open Problem}
 \theoremstyle{definition}
-\newtheorem{definition}[theorem]{Definition}
-\newtheorem{example}[theorem]{Example}
-
+\newtheorem{definition}{Definition}
 \theoremstyle{remark}
-\newtheorem{remark}[theorem]{Remark}
+\newtheorem{remark}{Remark}
 
-
-\newcommand{\N}{\mathbb{N}}
-\newcommand{\Z}{\mathbb{Z}}
 \newcommand{\np}{\operatorname{nextprime}}
 \newcommand{\prevprime}{\operatorname{prevprime}}
-\newcommand{\seqnum}[1]{\href{https://oeis.org/#1}{\rm \underline{#1}}}
 
-\title{Computational Extension of OEIS Sequence A052075:
+\title{Computational Extension of OEIS Sequence A052075:\\
 A New Term and an Exhaustive Search to $4 \times 10^{14}$}
-
-\author{
-Carlo Corti\\
+\author{Carlo Corti\\
 Independent researcher\\
-21-040 Kalin\'owka\\
-Poland\\
-\texttt{carlo.corti@outlook.com}
-}
-
-\date{}
+\texttt{carlo.corti@outlook.com}}
+\date{April 2026}
 
 \begin{document}
 
 \maketitle
 
 \begin{abstract}
-We extend OEIS sequence \seqnum{A052075}, which consists of primes whose
+We extend OEIS sequence A052075, which consists of primes whose
 successor prime appears as a contiguous decimal substring of the cube.
 We carry out an exhaustive computation over the interval from
 $6.9 \times 10^{12}$ to $4 \times 10^{14}$ using a segmented sieve of
@@ -58,17 +52,17 @@ We also prove a congruential restriction on trailing matches modulo~10
 and discuss a heuristic model suggesting that the sequence is infinite.
 \end{abstract}
 
-2020 Mathematics Subject Classification: Primary 11A41;
-Secondary 11Y55, 11N05, 11A07.
+\noindent\textbf{2020 Mathematics Subject Classification.}
+Primary 11A41; Secondary 11Y55, 11N05, 11A07.
 
-Key words and phrases: prime number, integer sequence,
-substring, cube of a prime, segmented sieve, computational number
-theory.
+\noindent\textbf{Key words and phrases.}
+prime number, integer sequence, substring, cube of a prime, segmented
+sieve, computational number theory.
 
 \section{Introduction}
 \label{sec:intro}
 
-A prime $p$ belongs to sequence \seqnum{A052075} if the decimal
+A prime $p$ belongs to sequence A052075 if the decimal
 representation of its successor prime $q = \np(p)$ appears as a
 contiguous substring of the decimal representation of $p^3$.
 De Geest \cite{DeGeest2000} introduced the sequence in January~2000,
@@ -101,12 +95,12 @@ The resulting implementation exhausts $[6.9 \times 10^{12},
 The main results are as follows.
 \begin{enumerate}
 \item $a(16) = 287\,902\,832\,031\,253$ (Theorem~\ref{thm:a16}),
-      the first new term of \seqnum{A052075} since 2018.
+      the first new term of A052075 since 2018.
 \item $a(17) > 4 \times 10^{14}$ (Theorem~\ref{thm:a17}),
       extending Resta's bound by a factor of approximately~58.
 \item A congruential classification of trailing matches in
       Proposition~\ref{prop:mod10}.
-\item A heuristic discussion suggesting that \seqnum{A052075} is infinite.
+\item A heuristic discussion suggesting that A052075 is infinite.
 \end{enumerate}
 
 \subsection{Notation}
@@ -312,7 +306,7 @@ $n$ & $a(n) = p$ & $\np(p)$ & pos & len & type \\
 16 & 287\,902\,832\,031\,253 & 287\,902\,832\,031\,277 & 29 & 44 & T \\
 \bottomrule
 \end{tabular}
-\caption{Complete known terms of \seqnum{A052075}.
+\caption{Complete known terms of A052075.
 Column pos gives the 0-based starting position of $\np(p)$ in $s(p^3)$;
 column len gives the digit count $D = d(p^3)$;
 column type classifies the match as leading (L), trailing (T),
@@ -361,7 +355,9 @@ on $[6.9 \times 10^{12}, 4 \times 10^{14}]$.
 
 \begin{remark}
 The modular filter in \eqref{eq:filter} confirms
-$p(p^2 - 1) \equiv 24 \pmod{10^{15}}$.
+\[
+  p(p^2 - 1) \equiv 24 \pmod{10^{15}}.
+\]
 Indeed, $p \equiv 287\,902\,832\,031\,253 \pmod{10^{15}}$,
 so $p(p^2 - 1) \bmod 10^{15} = 24$.
 \end{remark}
@@ -540,7 +536,7 @@ positions and each position matches with probability $10^{-d}$.
 The number of $d$-digit primes is approximately
 $\pi(10^d) - \pi(10^{d-1}) \approx 8 \cdot 10^{d-1} / d$
 (a standard rough estimate from the prime number theorem).
-The expected number of terms of \seqnum{A052075} in the $d$-digit
+The expected number of terms of A052075 in the $d$-digit
 decade is therefore
 \begin{equation}
 E_d \approx \frac{8 \cdot 10^{d-1}}{d} \cdot \frac{2d}{10^d} = 1.6.
@@ -569,7 +565,7 @@ decade, consistent with the observed density.
 Since the adjusted estimate of approximately 1.25 terms per decade
 remains bounded away from zero across decades, the heuristic model
 suggests that sufficiently large decades should continue to contain
-terms of \seqnum{A052075} with positive probability.
+terms of A052075 with positive probability.
 Under an additional assumption that occurrences in well-separated
 decades are approximately independent---which is plausible but
 unproved---this points toward infinitely many terms.
@@ -581,7 +577,7 @@ The discussion serves only as motivation for the following conjecture.
 
 \begin{conjecture}
 \label{conj:infinite}
-The sequence \seqnum{A052075} is infinite.
+The sequence A052075 is infinite.
 \end{conjecture}
 
 A rigorous proof of Conjecture~\ref{conj:infinite} seems to be beyond
@@ -592,7 +588,7 @@ with the non-algebraic structure of decimal representations.
 \label{sec:conclusion}
 
 We determine $a(16) = 287\,902\,832\,031\,253$, the first new term of
-\seqnum{A052075} since 2018, and establish the improved lower bound
+A052075 since 2018, and establish the improved lower bound
 $a(17) > 4 \times 10^{14}$.
 The computation requires about 66 elapsed hours on a commodity
 workstation and is made feasible by GMP arithmetic, an exact modular
@@ -630,20 +626,20 @@ Among the 16 known terms, 4 are trailing, 3 are leading, and
 \label{op:analogues}
 Investigate the analogous sequences for $p^k$ with $k \geq 2$,
 including the square analogue
-\seqnum{A052073} \cite{OEIS_A052073},
-the related sequence \seqnum{A321796} \cite{OEIS_A321796},
+A052073 \cite{OEIS_A052073},
+the related sequence A321796 \cite{OEIS_A321796},
 in which $\prevprime(p)$ is a substring of $p^3$,
-and the sequence \seqnum{A381969} \cite{OEIS_A381969},
+and the sequence A381969 \cite{OEIS_A381969},
 in which $\prevprime(p)$ is a substring of $p^2$.
 \end{openproblem}
 
-\section{Acknowledgments}
+\section*{Acknowledgments}
 
 The author thanks the OEIS contributors whose earlier computations
 established the initial terms and the previous lower bound for
-\seqnum{A052075}.
+A052075.
 
-\section{Data availability}
+\section*{Data availability}
 
 The complete dataset, including the oracle CSV file, per-segment logs,
 campaign summary, and machine-readable results, is available at
@@ -652,16 +648,16 @@ the GitHub repository
 and at the corresponding Zenodo archive
 \url{https://doi.org/10.5281/zenodo.19421914}.
 The results are also available through the OEIS entry
-for \seqnum{A052075}.
+for A052075.
 
-\section{Code availability}
+\section*{Code availability}
 
 The C source file \texttt{a052075\_v4.c} (version~4 of the search
 program), the associated Makefile, and a Python verification script
 \texttt{verify\_a052075.py} are available at the GitHub and Zenodo
 repositories listed in the previous section.
 
-\section{AI use disclosure}
+\section*{AI use disclosure}
 
 The author used large language model tools during the preparation of
 this work.
@@ -672,24 +668,107 @@ All mathematical arguments, computational claims, and final wording
 of the manuscript were produced and verified by the author, who takes
 full scientific responsibility for the paper.
 
-\section{Sequences}
+\section*{Sequences}
 
 The sequences appearing in this paper are as follows.
 
 \begin{itemize}
-\item \seqnum{A052073}, the square analogue of \seqnum{A052075}
+\item A052073, the square analogue of A052075
       mentioned in Open Problem~\ref{op:analogues}.
-\item \seqnum{A052075}, primes $p$ such that the successor prime
+\item A052075, primes $p$ such that the successor prime
       $\np(p)$ appears as a contiguous decimal substring of $p^3$.
-\item \seqnum{A321796}, primes $p$ such that the predecessor prime
+\item A321796, primes $p$ such that the predecessor prime
       $\prevprime(p)$ appears as a contiguous decimal substring
       of $p^3$, mentioned in Open Problem~\ref{op:analogues}.
-\item \seqnum{A381969}, primes $p$ such that the predecessor prime
+\item A381969, primes $p$ such that the predecessor prime
       $\prevprime(p)$ appears as a contiguous decimal substring
       of $p^2$, mentioned in Open Problem~\ref{op:analogues}.
 \end{itemize}
 
-\bibliographystyle{jis}
-\bibliography{A052075_rev12}
+\begin{thebibliography}{13}
+\sloppy
+\raggedright
+
+\bibitem{CrandallPomerance2005}
+R. Crandall and C. Pomerance,
+\emph{Prime Numbers: A Computational Perspective},
+Springer, 2nd edition, 2005.
+
+\bibitem{Dudek2014}
+A. W. Dudek,
+\emph{Some notes on digit strings in the primes},
+arXiv preprint arXiv:1407.7324 [math.NT], 2014.
+\url{https://arxiv.org/abs/1407.7324}.
+
+\bibitem{DeGeest2000}
+P. De Geest,
+\emph{Sequence A052075},
+The On-Line Encyclopedia of Integer Sequences,
+\url{https://oeis.org/A052075}.
+Contributed January 15, 2000.
+
+\bibitem{GMP}
+T. Granlund and the GMP development team,
+\emph{GNU Multiple Precision Arithmetic Library},
+version 6.3.0, 2023.
+\url{https://gmplib.org}.
+
+\bibitem{Handler2006}
+S. Handler,
+\emph{Comment on sequence A052075 (terms 8--15)},
+The On-Line Encyclopedia of Integer Sequences,
+\url{https://oeis.org/A052075}, 2006.
+
+\bibitem{OEIS_A052075}
+OEIS Foundation Inc.,
+\emph{Sequence A052075},
+The On-Line Encyclopedia of Integer Sequences,
+\url{https://oeis.org/A052075}, 2026.
+
+\bibitem{OEIS_A052073}
+OEIS Foundation Inc.,
+\emph{Sequence A052073},
+The On-Line Encyclopedia of Integer Sequences,
+\url{https://oeis.org/A052073}, 2026.
+
+\bibitem{OEIS_A321796}
+OEIS Foundation Inc.,
+\emph{Sequence A321796},
+The On-Line Encyclopedia of Integer Sequences,
+\url{https://oeis.org/A321796}, 2026.
+
+\bibitem{OEIS_A381969}
+OEIS Foundation Inc.,
+\emph{Sequence A381969},
+The On-Line Encyclopedia of Integer Sequences,
+\url{https://oeis.org/A381969}, 2025.
+
+\bibitem{OpenMP}
+OpenMP Architecture Review Board,
+\emph{OpenMP Application Programming Interface},
+version 5.2, 2021.
+\url{https://www.openmp.org}.
+
+\bibitem{Resta2018}
+G. Resta,
+\emph{Comment on sequence A052075: \(a(16) > 6.9 \times 10^{12}\)},
+The On-Line Encyclopedia of Integer Sequences,
+\url{https://oeis.org/A052075}, 2018.
+
+\bibitem{Sorenson1991}
+J. Sorenson,
+\emph{An Analysis of Two Prime Number Sieves},
+Technical Report 1028, Computer Sciences Department,
+University of Wisconsin--Madison, 1991.
+
+\bibitem{SymPy}
+SymPy Development Team,
+\emph{SymPy: Python Library for Symbolic Mathematics},
+version 1.14.0, 2024.
+\url{https://www.sympy.org}.
+Primality-testing documentation at
+\url{https://docs.sympy.org/latest/modules/ntheory.html}.
+
+\end{thebibliography}
 
 \end{document}

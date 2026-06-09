@@ -1,0 +1,53 @@
+# OS / editor files
+.DS_Store
+Thumbs.db
+*~
+*.swp
+*.swo
+.vscode/
+.idea/
+
+# Python cache / local environments
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.venv/
+venv/
+env/
+
+# C / build artifacts
+*.o
+*.obj
+*.so
+*.dylib
+*.dll
+*.exe
+a.out
+src/a052075_v4
+
+# Local run outputs generated outside curated data/logs
+hits.csv
+*.tmp
+*.bak
+*.backup
+
+# LaTeX auxiliary files
+*.aux
+*.bcf
+*.blg
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.run.xml
+*.synctex.gz
+*.toc
+
+# Do not ignore curated repository artifacts:
+# - paper/A052075.tex
+# - paper/A052075.pdf
+# - paper/A052075.bbl, if intentionally included
+# - data/*.csv
+# - logs/*.log
+# - logs/*.csv

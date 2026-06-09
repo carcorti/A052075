@@ -1,0 +1,27 @@
+cff-version: 1.2.0
+message: "If you use this repository, please cite the archived Zenodo record."
+title: "OEIS A052075: Computational Extension"
+authors:
+  - family-names: Corti
+    given-names: Carlo
+    email: carlo.corti@outlook.com
+    affiliation: Independent researcher
+type: software
+version: "1.0.1"
+date-released: "2026-04-07"
+abstract: >-
+  Computational repository supporting the extension of OEIS sequence A052075,
+  including the new term a(16) = 287902832031253 and an exhaustive search
+  establishing a(17) > 4 x 10^14.
+keywords:
+  - OEIS
+  - A052075
+  - computational number theory
+  - prime numbers
+  - segmented sieve
+  - GMP
+  - OpenMP
+repository-code: "https://github.com/carcorti/A052075"
+url: "https://github.com/carcorti/A052075"
+doi: "10.5281/zenodo.19421914"
+license: "MIT"
